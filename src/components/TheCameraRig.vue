@@ -9,6 +9,8 @@
   import '../aframe/x-button-listener.js';
   import '../aframe/asset-selector.js';
   import '../aframe/telescope-scope.js';
+  import '../aframe/cannon-shooter.js';
+  import '../aframe/force-rig-position.js';
   import '../aframe/trigger-click.js';
   import '../aframe/click-feedback.js';
 
@@ -23,14 +25,24 @@
     id="camera-rig"
     position="0 65 -135"
     rotation="0 180 0"
+    force-rig-position="position: 0 65 -135"
   >
     <a-entity
       id="head"
       look-controls="pointerLockEnabled: true"
       camera
-      telescope-scope="controller: #asset-hand; activeAsset: Longue vue; radius: 0.16; offset: 0.2 -0.1 -0.5; fov: 18"
+      telescope-scope="controller: #asset-hand; attachTo: #asset-hand; activeAsset: Longue vue; radius: 0.14; offset: 0 0 -0.35; distance: 0.6; fov: 16"
       position="0 0 0"
     >
+      <a-text
+        id="mission-status"
+        value=""
+        visible="false"
+        position="0 -0.15 -0.45"
+        align="center"
+        color="#ffffff"
+        scale="0.2 0.2 0.2"
+      ></a-text>
       <a-entity
         geometry="primitive: circle; radius: 0.0003;"
         material="shader: flat; color: white;"
@@ -129,6 +141,7 @@
       custom-controls="hand: right"
       controller-fallback="hand: right"
       asset-selector="hand: right"
+      cannon-shooter="activeAsset: Canon"
       trigger-click
     >
       <!-- Display area for selected asset - bigger and more forward -->

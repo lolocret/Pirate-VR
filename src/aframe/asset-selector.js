@@ -21,8 +21,9 @@ AFRAME.registerComponent('asset-selector', {
     const assets = [
       { name: 'Main', url: `${siteBase}assets/main.glb`, position: '0 -0.2 0.54', rotation: '-10 0 0', scale: '0.2 0.2 0.2', equipPosition: '0 -0.4 0.12', equipScale: '0.22 0.22 0.22' },
       { name: 'Épée', urls: resolveAssetUrls('assets/epee.glb'), position: '0 0 -0.3', rotation: '0 90 0', scale: '0.2 0.2 0.2', equipPosition: '0 -0.05 -0.04', equipScale: '0.22 0.22 0.22', center: true },
-      { name: 'Longue vue', url: `${siteBase}assets/telescope.glb`, position: '0.12 -0.1 0.2', rotation: '0 90 20', scale: '0.2 0.2 0.2', equipPosition: '0.12 -0.08 0.08', equipRotation: '0 90 90', equipScale: '0.2 0.2 0.2' },
+      { name: 'Longue vue', url: `${siteBase}assets/telescope.glb`, position: '0.12 -0.08 0.18', rotation: '0 -90 -20', scale: '0.2 0.2 0.2', equipPosition: '0.12 -0.08 0.08', equipRotation: '0 -90 90', equipScale: '0.2 0.2 0.2' },
       { name: 'Compass', url: `${siteBase}assets/pirate_compass-converted.glb`, position: '0 0.65 0.04', rotation: '0 0 0', scale: '0.1 0.1 0.1', equipPosition: '0 0.03 -0.03', equipScale: '0.1 0.1 0.1' },
+      { name: 'Canon', noDisplay: true },
       { name: 'Drapeau', url: `${siteBase}assets/pirate_flag_animated-converted.glb`, position: '0 1 0.6', rotation: '0 180 0', scale: '0.005 0.005 0.005', equipPosition: '0 -0.06 -0.02', equipScale: '0.16 0.16 0.16', center: true, animate: true }
     ];
 
@@ -56,43 +57,45 @@ AFRAME.registerComponent('asset-selector', {
       const previousModels = displayArea.querySelectorAll('[data-asset-model]');
       previousModels.forEach(m => m.parentNode.removeChild(m));
 
-      // Add new asset model
-      const model = document.createElement('a-entity');
-      model.setAttribute('data-asset-model', 'true');
-      const initialUrl = asset.url || (asset.urls && asset.urls[0]);
-      model.setAttribute('gltf-model', initialUrl);
-      model.setAttribute('position', asset.position);
-      model.setAttribute('rotation', asset.rotation || '0 0 0');
-      model.setAttribute('scale', asset.scale);
-      model.setAttribute('visible', 'true');
-      if (asset.animate) {
-        model.setAttribute('animation-mixer', '');
-      }
-
-      model.addEventListener('model-loaded', (evt) => {
-        if (!asset.center || !window.THREE) return;
-        const obj = evt.detail && evt.detail.model;
-        if (!obj) return;
-        const box = new THREE.Box3().setFromObject(obj);
-        const center = new THREE.Vector3();
-        box.getCenter(center);
-        obj.position.sub(center);
-      });
-
-      model.addEventListener('model-error', (evt) => {
-        const urls = asset.urls || (asset.url ? [asset.url] : []);
-        const currentUrl = model.getAttribute('gltf-model');
-        const nextIndex = urls.indexOf(currentUrl) + 1;
-        if (nextIndex > 0 && nextIndex < urls.length) {
-          const nextUrl = urls[nextIndex];
-          console.warn('Model failed to load, retrying with:', nextUrl);
-          model.setAttribute('gltf-model', nextUrl);
-          return;
+      const initialUrl = asset.url || (asset.urls && asset.urls[0]) || '';
+      if (!asset.noDisplay) {
+        // Add new asset model
+        const model = document.createElement('a-entity');
+        model.setAttribute('data-asset-model', 'true');
+        model.setAttribute('gltf-model', initialUrl);
+        model.setAttribute('position', asset.position);
+        model.setAttribute('rotation', asset.rotation || '0 0 0');
+        model.setAttribute('scale', asset.scale);
+        model.setAttribute('visible', 'true');
+        if (asset.animate) {
+          model.setAttribute('animation-mixer', '');
         }
-        console.warn('Model failed to load:', currentUrl, evt && evt.detail);
-      });
-      
-      displayArea.appendChild(model);
+
+        model.addEventListener('model-loaded', (evt) => {
+          if (!asset.center || !window.THREE) return;
+          const obj = evt.detail && evt.detail.model;
+          if (!obj) return;
+          const box = new THREE.Box3().setFromObject(obj);
+          const center = new THREE.Vector3();
+          box.getCenter(center);
+          obj.position.sub(center);
+        });
+
+        model.addEventListener('model-error', (evt) => {
+          const urls = asset.urls || (asset.url ? [asset.url] : []);
+          const currentUrl = model.getAttribute('gltf-model');
+          const nextIndex = urls.indexOf(currentUrl) + 1;
+          if (nextIndex > 0 && nextIndex < urls.length) {
+            const nextUrl = urls[nextIndex];
+            console.warn('Model failed to load, retrying with:', nextUrl);
+            model.setAttribute('gltf-model', nextUrl);
+            return;
+          }
+          console.warn('Model failed to load:', currentUrl, evt && evt.detail);
+        });
+
+        displayArea.appendChild(model);
+      }
 
       // Update text
       if (textEl) {
@@ -100,7 +103,7 @@ AFRAME.registerComponent('asset-selector', {
       }
 
       el.emit('asset-changed', { name: asset.name }, false);
-      console.log(`Asset displayed: ${asset.name} at URL: ${initialUrl}`);
+      console.log(`Asset displayed: ${asset.name} at URL: ${initialUrl || '(none)'}`);
     };
 
     // Manual cycle (desktop debug)
@@ -119,7 +122,7 @@ AFRAME.registerComponent('asset-selector', {
     window.addEventListener('keydown', this.onKeyDown);
 
     const findAssetIndex = (name) => assets.findIndex(a => a.name === name);
-    const matchesPos = (a, b, tol = 0.5) => {
+    const matchesPos = (a, b, tol = 2.0) => {
       if (!a || !b) return false;
       return Math.abs(a.x - b.x) <= tol && Math.abs(a.y - b.y) <= tol && Math.abs(a.z - b.z) <= tol;
     };
@@ -128,7 +131,7 @@ AFRAME.registerComponent('asset-selector', {
       { pos: { x: 0, y: 65, z: -135 }, asset: 'Main' },
       { pos: { x: 2, y: 145, z: -82 }, asset: 'Longue vue' },
       { pos: { x: 4, y: 64, z: -32 }, asset: 'Compass' },
-      { pos: { x: 27, y: 61, z: -55 }, asset: 'Épée' }
+      { pos: { x: 27, y: 61, z: -55 }, asset: 'Canon' }
     ];
 
     const onTeleported = (evt) => {

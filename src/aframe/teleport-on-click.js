@@ -21,6 +21,10 @@ AFRAME.registerComponent('teleport-on-click', {
         targetPos = this.data.position;
       }
       this.data.rig.setAttribute('position', `${targetPos.x} ${targetPos.y} ${targetPos.z}`);
+      if (this.data.rig.object3D) {
+        this.data.rig.object3D.position.set(targetPos.x, targetPos.y, targetPos.z);
+        this.data.rig.object3D.updateMatrixWorld();
+      }
       this.data.rig.emit('teleported', { position: { x: targetPos.x, y: targetPos.y, z: targetPos.z } }, false);
     };
     this.el.addEventListener('click', this.onClick);
