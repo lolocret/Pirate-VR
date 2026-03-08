@@ -18,13 +18,21 @@ AFRAME.registerComponent('force-rig-position', {
     apply();
 
     if (this.el.sceneEl) {
-      this.el.sceneEl.addEventListener('loaded', apply);
+      const applySoon = () => setTimeout(apply, 0);
+      this._applySoon = applySoon;
+      this.el.sceneEl.addEventListener('loaded', applySoon);
+      this.el.sceneEl.addEventListener('enter-scene', applySoon);
+      this.el.sceneEl.addEventListener('enter-vr', applySoon);
+      this.el.sceneEl.addEventListener('exit-vr', applySoon);
     }
   },
 
   remove: function () {
-    if (this.el.sceneEl && this.applyPosition) {
-      this.el.sceneEl.removeEventListener('loaded', this.applyPosition);
+    if (this.el.sceneEl && this._applySoon) {
+      this.el.sceneEl.removeEventListener('loaded', this._applySoon);
+      this.el.sceneEl.removeEventListener('enter-scene', this._applySoon);
+      this.el.sceneEl.removeEventListener('enter-vr', this._applySoon);
+      this.el.sceneEl.removeEventListener('exit-vr', this._applySoon);
     }
   }
 });

@@ -21,6 +21,8 @@
     cameraRot: {type: Number, default: 0},
     cameraSelector: {type: String, default: '[camera]'},
   });
+  const base = import.meta.env.BASE_URL;
+  const fontUrl = `${base}fonts/DejaVu-sdf.fnt`;
   const id = ref(props.id);
   // if no id is set, generate a random one
   if (!id.value) {
@@ -47,6 +49,7 @@
       align="center"
       :value="label"
       position="0 1.2 0"
+      :font="fontUrl"
     ></a-text>
 
     <a-entity

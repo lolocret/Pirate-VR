@@ -1,4 +1,6 @@
 /* global AFRAME, THREE */
+import { playTelescopeZoom, playTreasureFound } from './audio-fx.js';
+
 AFRAME.registerComponent('telescope-scope', {
   schema: {
     controller: { type: 'selector', default: '#asset-hand' },
@@ -8,15 +10,29 @@ AFRAME.registerComponent('telescope-scope', {
     radius: { type: 'number', default: 0.18 },
     offset: { type: 'vec3', default: { x: 0.0, y: 0.0, z: -0.5 } },
     distance: { type: 'number', default: 0.6 },
-    resolution: { type: 'number', default: 512 }
+    resolution: { type: 'number', default: 512 },
+    useScopeMesh: { type: 'boolean', default: false },
+    zoomFov: { type: 'number', default: 18 },
+    targets: { type: 'string', default: '.telescope-target' },
+    status: { type: 'selector', default: '#mission-status' },
+    treasureMessage: { type: 'string', default: 'Tresor trouve ! Mission validee !' },
+    treasureMessageMs: { type: 'number', default: 4000 },
+    rig: { type: 'selector', default: '#camera-rig' },
+    telescopePos: { type: 'vec3', default: { x: 2, y: 145, z: -82 } },
+    posTolerance: { type: 'number', default: 4 },
+    allowDesktop: { type: 'boolean', default: true },
+    forceEnable: { type: 'boolean', default: true }
   },
 
   init: function () {
     this.sceneEl = this.el.sceneEl;
     this.renderer = this.sceneEl && this.sceneEl.renderer;
     this.scopeActive = false;
-    this.triggerHeld = false;
+    this.zoomActive = false;
     this.currentAsset = '';
+    this._seen = new Set();
+    this._origFov = null;
+    this._raycaster = new THREE.Raycaster();
 
     this._tmpVec = new THREE.Vector3();
     this._tmpQuat = new THREE.Quaternion();
@@ -38,42 +54,116 @@ AFRAME.registerComponent('telescope-scope', {
 
     const attachTarget = this.data.attachTo || this.el;
     const attachObj = attachTarget && attachTarget.object3D ? attachTarget.object3D : this.el.object3D;
-    attachObj.add(this.scopeMesh);
+    if (this.data.useScopeMesh) {
+      attachObj.add(this.scopeMesh);
+    }
 
     this.onAssetChanged = (evt) => {
       this.currentAsset = (evt && evt.detail && evt.detail.name) || '';
     };
 
-    this.onTriggerDown = () => {
-      this.triggerHeld = true;
+    this._lastToggle = 0;
+    this._toggleTelescope = () => {
+      if (!this.isTelescopeActive()) return;
+      const now = Date.now();
+      if (now - this._lastToggle < 600) return; // debounce — évite le double-toggle
+      this._lastToggle = now;
+      this.zoomActive = !this.zoomActive;
       this.updateScopeState();
     };
-    this.onTriggerUp = () => {
-      this.triggerHeld = false;
-      this.updateScopeState();
+    this.onTriggerDown = this._toggleTelescope;
+    this.onClick = this._toggleTelescope;
+    this.onTriggerUp = () => {};
+    this.onAltToggle = this._toggleTelescope;
+
+    // Desktop testing: Key Z or right click toggles zoom
+    this.onKeyDown = (evt) => {
+      if (evt.code !== 'KeyZ') return;
+      this._toggleTelescope();
+    };
+    this.onMouseDown = (evt) => {
+      if (evt.button !== 2) return;
+      this._toggleTelescope();
     };
 
-    const ctrl = this.data.controller;
-    if (ctrl) {
+    this._boundCtrl = null;
+    this._bindController = () => {
+      const ctrl = this.data.controller || document.querySelector('#asset-hand');
+      if (!ctrl || ctrl === this._boundCtrl) return;
+      if (this._boundCtrl) {
+        this._boundCtrl.removeEventListener('asset-changed', this.onAssetChanged);
+        this._boundCtrl.removeEventListener('app-triggerdown', this.onTriggerDown);
+        this._boundCtrl.removeEventListener('triggerdown', this.onTriggerDown);
+        this._boundCtrl.removeEventListener('app-gripdown', this.onTriggerDown);
+        this._boundCtrl.removeEventListener('gripdown', this.onTriggerDown);
+        this._boundCtrl.removeEventListener('app-triggerup', this.onTriggerUp);
+        this._boundCtrl.removeEventListener('triggerup', this.onTriggerUp);
+      }
+      this._boundCtrl = ctrl;
       ctrl.addEventListener('asset-changed', this.onAssetChanged);
       ctrl.addEventListener('app-triggerdown', this.onTriggerDown);
+      ctrl.addEventListener('triggerdown', this.onTriggerDown);
+      ctrl.addEventListener('app-gripdown', this.onTriggerDown);
+      ctrl.addEventListener('gripdown', this.onTriggerDown);
+      ctrl.addEventListener('thumbstickdown', this.onAltToggle);
+      ctrl.addEventListener('trackpaddown', this.onAltToggle);
+      ctrl.addEventListener('xbuttondown', this.onAltToggle);
+      ctrl.addEventListener('ybuttondown', this.onAltToggle);
       ctrl.addEventListener('app-triggerup', this.onTriggerUp);
-    }
+      ctrl.addEventListener('triggerup', this.onTriggerUp);
+      ctrl.addEventListener('click', this.onClick);
+      ctrl.addEventListener('abuttondown', this.onTriggerDown);
+      ctrl.addEventListener('bbuttondown', this.onTriggerDown);
+    };
+    this._bindController();
+    window.addEventListener('keydown', this.onKeyDown);
+    window.addEventListener('mousedown', this.onMouseDown);
   },
 
   updateScopeState: function () {
-    const shouldShow = this.triggerHeld && this.currentAsset === this.data.activeAsset;
+    const shouldShow = this.zoomActive && this.isTelescopeActive();
     this.scopeActive = shouldShow;
-    if (this.scopeMesh) this.scopeMesh.visible = shouldShow;
+    playTelescopeZoom(shouldShow);
+    if (this.scopeMesh) this.scopeMesh.visible = shouldShow && this.data.useScopeMesh;
+
+    const cam = this.el.getObject3D('camera') || (this.el.sceneEl && this.el.sceneEl.camera);
+    if (cam) {
+      if (shouldShow) {
+        if (this._origFov == null) this._origFov = cam.fov;
+        cam.fov = this.data.zoomFov;
+        cam.updateProjectionMatrix();
+      } else if (this._origFov != null) {
+        cam.fov = this._origFov;
+        cam.updateProjectionMatrix();
+      }
+    }
+  },
+
+  update: function () {
+    if (this._bindController) this._bindController();
+  },
+
+  isTelescopeActive: function () {
+    if (this.data.forceEnable) return true;
+    if (this.data.allowDesktop && !AFRAME.utils.device.checkHeadsetConnected()) return true;
+    if (this.currentAsset === this.data.activeAsset) return true;
+    if (!this.data.rig || !this.data.rig.object3D) return false;
+    const p = this.data.rig.object3D.position;
+    const t = this.data.telescopePos;
+    return Math.abs(p.x - t.x) <= this.data.posTolerance &&
+      Math.abs(p.y - t.y) <= this.data.posTolerance &&
+      Math.abs(p.z - t.z) <= this.data.posTolerance;
   },
 
   tick: function () {
+    if (!this._boundCtrl) this._bindController();
     if (!this.scopeActive || !this.renderer) return;
     const attachTarget = this.data.attachTo || this.el;
     const attachObj = attachTarget && attachTarget.object3D ? attachTarget.object3D : null;
     if (!attachObj) return;
 
-    const raycaster = this.data.controller && this.data.controller.components && this.data.controller.components.raycaster;
+    const ctrlForRay = this.data.controller || this._boundCtrl;
+    const raycaster = ctrlForRay && ctrlForRay.components && ctrlForRay.components.raycaster;
     if (raycaster && raycaster.ray) {
       this.scopeCamera.position.copy(raycaster.ray.origin);
       this._tmpVec.copy(raycaster.ray.origin).add(this._tmpVec.copy(raycaster.ray.direction).multiplyScalar(10));
@@ -89,24 +179,84 @@ AFRAME.registerComponent('telescope-scope', {
       attachObj.getWorldQuaternion(this._tmpQuat);
       this.scopeCamera.position.copy(this._tmpVec);
       this.scopeCamera.quaternion.copy(this._tmpQuat);
+      if (this.scopeMesh && this.scopeMesh.parent) {
+        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(this._tmpQuat);
+        const worldPos = this._tmpVec.clone().add(forward.multiplyScalar(this.data.distance));
+        this.scopeMesh.parent.worldToLocal(worldPos);
+        this.scopeMesh.position.copy(worldPos);
+      }
     }
     this.scopeCamera.updateProjectionMatrix();
 
-    // Avoid recursive rendering of the scope itself.
-    this.scopeMesh.visible = false;
-    this.renderer.setRenderTarget(this.renderTarget);
-    this.renderer.render(this.sceneEl.object3D, this.scopeCamera);
-    this.renderer.setRenderTarget(null);
-    this.scopeMesh.visible = true;
+    if (this.data.useScopeMesh) {
+      // Avoid recursive rendering of the scope itself.
+      this.scopeMesh.visible = false;
+      this.renderer.setRenderTarget(this.renderTarget);
+      this.renderer.render(this.sceneEl.object3D, this.scopeCamera);
+      this.renderer.setRenderTarget(null);
+      this.scopeMesh.visible = true;
+    }
+
+    // Telescope mission: validate when both targets are seen while zoomed.
+    const rc = ctrlForRay && ctrlForRay.components && ctrlForRay.components.raycaster;
+    const targetSelector = this.data.targets || '.telescope-target';
+    const targets = Array.from(document.querySelectorAll(targetSelector));
+    if (targets.length) {
+      if (rc && rc.ray) {
+        this._raycaster.set(rc.ray.origin, rc.ray.direction);
+      } else {
+        const origin = new THREE.Vector3();
+        const dir = new THREE.Vector3(0, 0, -1);
+        this.scopeCamera.getWorldPosition(origin);
+        dir.applyQuaternion(this.scopeCamera.getWorldQuaternion(new THREE.Quaternion()));
+        this._raycaster.set(origin, dir);
+      }
+      this._raycaster.far = 4000;
+      const hit = this._raycaster.intersectObjects(targets.map(t => t.object3D), true);
+      if (hit && hit.length) {
+        const el = hit[0].object.el && hit[0].object.el.closest
+          ? hit[0].object.el.closest(targetSelector)
+          : hit[0].object.el;
+        if (el && el.id) {
+          this._seen.add(el.id);
+        }
+      }
+      if (this._seen.has('tresor') && !this._tresorFound) {
+        this._tresorFound = true;
+        playTreasureFound();
+        const statusEl = this.data.status;
+        if (statusEl) {
+          statusEl.setAttribute('visible', 'true');
+          statusEl.setAttribute('value', this.data.treasureMessage);
+          if (this._treasureTimer) clearTimeout(this._treasureTimer);
+          this._treasureTimer = setTimeout(() => {
+            statusEl.setAttribute('visible', 'false');
+          }, this.data.treasureMessageMs);
+        }
+      }
+    }
   },
 
   remove: function () {
-    const ctrl = this.data.controller;
+    const ctrl = this._boundCtrl || this.data.controller;
     if (ctrl) {
       ctrl.removeEventListener('asset-changed', this.onAssetChanged);
       ctrl.removeEventListener('app-triggerdown', this.onTriggerDown);
+      ctrl.removeEventListener('triggerdown', this.onTriggerDown);
+      ctrl.removeEventListener('app-gripdown', this.onTriggerDown);
+      ctrl.removeEventListener('gripdown', this.onTriggerDown);
+      ctrl.removeEventListener('thumbstickdown', this.onAltToggle);
+      ctrl.removeEventListener('trackpaddown', this.onAltToggle);
+      ctrl.removeEventListener('xbuttondown', this.onAltToggle);
+      ctrl.removeEventListener('ybuttondown', this.onAltToggle);
       ctrl.removeEventListener('app-triggerup', this.onTriggerUp);
+      ctrl.removeEventListener('triggerup', this.onTriggerUp);
+      ctrl.removeEventListener('click', this.onClick);
+      ctrl.removeEventListener('abuttondown', this.onTriggerDown);
+      ctrl.removeEventListener('bbuttondown', this.onTriggerDown);
     }
+    window.removeEventListener('keydown', this.onKeyDown);
+    window.removeEventListener('mousedown', this.onMouseDown);
     if (this.scopeMesh) {
       if (this.scopeMesh.parent) {
         this.scopeMesh.parent.remove(this.scopeMesh);
@@ -116,6 +266,10 @@ AFRAME.registerComponent('telescope-scope', {
     }
     if (this.renderTarget) {
       this.renderTarget.dispose();
+    }
+    if (this._treasureTimer) {
+      clearTimeout(this._treasureTimer);
+      this._treasureTimer = null;
     }
   }
 });

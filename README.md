@@ -1,86 +1,56 @@
 <p align="center">
-    <img src="./logo.svg" alt="VAV Logo" align="center"/>
+    <img src="./logo.svg" alt="Pirate VR Logo" align="center"/>
 </p>
-<h1 align="center">Vue + A-Frame + Vite boilerplate</h1>
+<h1 align="center">Pirate VR – Mission en mer</h1>
 
-> A boilerplate for A-Frame, Vue and Vite
+> Expérience VR pirate construite avec A‑Frame + Vue + Vite.
 
-![Vue.js](https://img.shields.io/badge/vuejs-%2335495e.svg?style=for-the-badge&logo=vuedotjs&logoColor=%234FC08D)
-![A-Frame](https://img.shields.io/badge/A%E2%80%93Frame-brightgreen?style=for-the-badge&labelColor=%23ef2d5e&color=%23ef2d5e)
-![Threejs](https://img.shields.io/badge/threejs-black?style=for-the-badge&logo=three.js&logoColor=white)
-![Vite](https://img.shields.io/badge/vite-%23646CFF.svg?style=for-the-badge&logo=vite&logoColor=white)
+## But du jeu
 
-### [>> DEMO <<](https://onivers.com/aframe-vue-boilerplate/)
+Parler à Ching Shih, repérer le trésor avec la longue‑vue, puis éliminer le Kraken au canon.
 
-## Included in the boilerplate
+## Contrôles
 
-### Libs and components
+- **VR**
+- Main droite : changer d’objet (A/B ou Grip)
+- Longue‑vue : gâchette pour zoomer
+- Canon : gâchette pour tirer
+- Carte (main gauche) : téléportation
 
-- [aframe-extras](https://github.com/c-frame/aframe-extras) (MIT License)
-- [aframe physx](https://github.com/c-frame/physx) (MIT License)
-- [aframe-blink-controls](https://github.com/jure/aframe-blink-controls) (MIT License)
-- [aframe-multi-camera](https://github.com/diarmidmackenzie/aframe-multi-camera/) (MIT License)
-- [simple-navmesh-constraint](https://github.com/AdaRoseCannon/aframe-xr-boilerplate) (MIT Licence)
+- **Desktop (test)**
+- Déplacement : `WASD` / flèches
+- Regarder : souris
+- Tir : clic gauche
+- Zoom : clic droit ou `Z`
 
-### Movement modes support
-
-- **Desktop** – Keyboard for move (_WASD_ or Arrows keys) + Mouse for look control (Drag and drop)
-- **Mobile** – 1x Finger touch to go forward + 2x Fingers touch to go backward + Gaze cursor for click
-- **VR/AR** – walk + Teleport (Grip for grab and laser for click) + Gaze cursor for click in AR
-
-### 3D models
-
-- **Main room** – [VR Gallery](https://sketchfab.com/3d-models/vr-gallery-1ac32ed62fdf424498acc146fad31f7e) by [Maxim Mavrichev](https://sketchfab.com/mvrc.art) is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
-- **3D physic room** – [3d_gallery_for_vr_projects](https://sketchfab.com/3d-models/3d-gallery-for-vr-projects-68f77ed8558c4bd59e0a13e2cc9d1fd1) by [tekuto1s](https://sketchfab.com/tekuto1s) is licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)
-
----
-
-## Quickstart
-
-### Create a folder for your project and move to it
-
-### Clone (or fork, or download)
-
-```sh
-git clone https://github.com/Chabloz/a-frame-vite-vue-boilerplate.git .
-```
-
-### Install dependencies
+## Démarrage rapide
 
 ```sh
 npm ci
-```
-
-### Dev
-
-```sh
 npm run dev
 ```
 
-### Build
+## Build
 
 ```sh
 npm run build
 ```
 
-## Notes for local dev on VR headset
+## Déploiement local sur casque VR
 
-1. Check that your development device and your VR headset are connected on **the same network**.
-
-2. Expose you local development:
+1. Vérifier que le PC et le casque sont sur le même réseau.
+2. Exposer le serveur :
 
 ```sh
 npm run dev-expose
 ```
 
-3. In your VR headset, browse to the local development adress `[ip]:[port]`.
+3. Ouvrir l’URL `[ip]:[port]` dans le navigateur du casque.
 
-> [!NOTE]
-> The certificate is self-signed, so you will probably have to confirm access to the resource in your browser.
+> Note : certificat auto‑signé, il faut accepter l’avertissement.
 
----
+## Stack
 
-## License
-
-![MIT License](https://img.shields.io/badge/License-MIT-brightgreen?style=for-the-badge&color=%23262626)
-# Pirate-VR
+- A‑Frame
+- Vue 3
+- Vite

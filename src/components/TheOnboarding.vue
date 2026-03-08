@@ -19,80 +19,31 @@
 <template>
   <div id="onboarding" v-if="showOnboarding">
     <div>
-      <h1>A-Frame + Vite + Vue Boilerplate</h1>
-      <p v-if="!loaded">loading...</p>
-      <button v-if="loaded" @click="enterScene()">Enter scene</button>
+      <h1>Pirate VR – Mission en mer</h1>
+      <p v-if="!loaded">Chargement...</p>
+      <button v-if="loaded" @click="enterScene()">Entrer dans la mer</button>
       <div class="licences">
         <section>
-          <h4>Movement modes support</h4>
+          <h4>Commandes</h4>
           <ul>
             <li>
-              Desktop – Keyboard for move (WASD or Arrows keys) + Mouse for look
-              control (Drag and drop)
+              Desktop – Déplacement clavier (ZQSD/WASD ou flèches) + souris pour regarder.
             </li>
             <li>
-              Mobile – 1x Finger touch to go forward + 2x Fingers touch to go
-              backward + Gaze cursor for click
+              VR – Téléportation via la carte + laser pour viser.
             </li>
             <li>
-              VR/AR – walk + Teleport (Grip for grab and laser for
-              click) + Gaze cursor for click
+              Longue-vue – Gâchette pour zoomer quand elle est sélectionnée.
             </li>
           </ul>
         </section>
         <section>
-          <h4>Source code</h4>
-          <blockquote><a href="https://github.com/Chabloz/a-frame-vite-vue-boilerplate">Github repo</a></blockquote>
+          <h4>Objectif</h4>
+          <p>
+            Repérez le Kraken dans l’eau, puis utilisez le canon pour le toucher.
+            La mission est validée quand le Kraken est détruit.
+          </p>
         </section>
-        <dl>
-          <dt>
-            <i>Included</i>
-          </dt>
-          <dt>
-            <a href="https://github.com/c-frame/aframe-extras" target="_blank">aframe-extras</a>
-          </dt><dd>
-            <a href="https://github.com/c-frame/aframe-extras/blob/master/LICENSE" target="_blank">MIT License</a>
-          </dd>
-
-          <dt>
-            <a href="https://github.com/c-frame/physx" target="_blank">aframe physx</a>
-          </dt><dd>
-            <a href="https://github.com/c-frame/aframe-extras/blob/master/LICENSE" target="_blank">MIT License</a>
-          </dd>
-
-          <dt>
-            <a href="https://github.com/jure/aframe-blink-controls/" target="_blank">aframe-blink-controls</a>
-          </dt><dd>
-            <a href="https://github.com/jure/aframe-blink-controls/blob/main/LICENSE" target="_blank">MIT License</a>
-          </dd>
-
-          <dt>
-            <a href="https://github.com/diarmidmackenzie/aframe-multi-camera/" target="_blank">aframe-multi-camera</a>
-          </dt><dd>
-            <a href="https://github.com/diarmidmackenzie/aframe-multi-camera/blob/main/LICENSE" target="_blank">MIT License</a>
-          </dd>
-
-          <dt>
-            <a href=" https://github.com/AdaRoseCannon/aframe-xr-boilerplate" target="_blank">simple-navmesh-constraint</a>
-          </dt><dd>
-            By Ada Rose Cannon under MIT License
-          </dd>
-
-          <dt>
-            <a href="https://sketchfab.com/3d-models/vr-gallery-1ac32ed62fdf424498acc146fad31f7e" target="_blank">VR Gallery</a>
-          </dt><dd>
-            by <a href="https://sketchfab.com/mvrc.art" target="_blank">Maxim Mavrichev</a>
-            under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
-          </dd>
-
-          <dt>
-            <a href="https://sketchfab.com/3d-models/3d-gallery-for-vr-projects-68f77ed8558c4bd59e0a13e2cc9d1fd1" target="_blank">Physic room model</a>
-          </dt><dd>
-            by <a href="https://sketchfab.com/tekuto1s" target="_blank">tekuto1s</a>
-            under <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank">CC BY 4.0</a>
-          </dd>
-
-        </dl>
       </div>
     </div>
   </div>

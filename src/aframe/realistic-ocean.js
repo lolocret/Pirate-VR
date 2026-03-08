@@ -15,6 +15,7 @@ AFRAME.registerComponent("realistic-ocean", {
     waveAmp: { type: "number", default: 0.9 },    // overall amplitude
     waveLength: { type: "number", default: 24.0 },// overall wavelength
     waveSpeed: { type: "number", default: 1.0 },  // overall speed
+    timeScale: { type: "number", default: 1.0 },  // animation speed multiplier
     // Look
     deepColor: { type: "color", default: "#3d4b87" },
     shallowColor: { type: "color", default: "#446fc4" },
@@ -271,7 +272,7 @@ AFRAME.registerComponent("realistic-ocean", {
 
   tick(t) {
     if (!this.mat) return;
-    this.mat.uniforms.uTime.value = t * 0.001;
+    this.mat.uniforms.uTime.value = t * 0.001 * (this.data.timeScale || 1.0);
 
     const cam = this.el.sceneEl.camera;
     if (cam) {
