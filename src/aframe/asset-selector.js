@@ -17,6 +17,7 @@ AFRAME.registerComponent('asset-selector', {
     this.currentAssetIndex = 0;
     this.equippedEl = null;
     this.lastCycleAt = 0;
+    this._lastAutoEquipAt = 0;
 
     this.teleportMap = [
       { pos: { x: 0, y: 65, z: -135 }, asset: 'Main' },
@@ -56,6 +57,20 @@ AFRAME.registerComponent('asset-selector', {
         this._rig = rig;
       }
     });
+  },
+
+  tick: function () {
+    if (!this._rig || !this._rig.object3D) return;
+    const now = Date.now();
+    if (now - this._lastAutoEquipAt < 800) return;
+    this._lastAutoEquipAt = now;
+    const p = this._rig.object3D.position;
+    const match = this.teleportMap.find(m => this._matchesPos(m.pos, p, 8.0));
+    if (!match) return;
+    const idx = this.assets.findIndex(a => a.name === match.asset);
+    if (idx >= 0 && idx !== this.currentAssetIndex) {
+      this.displayAsset(idx);
+    }
   },
 
   _cacheEls: function () {

@@ -22,7 +22,7 @@
     cameraSelector: {type: String, default: '[camera]'},
   });
   const base = import.meta.env.BASE_URL;
-  const fontUrl = `${base}fonts/DejaVu-sdf.fnt`;
+  const fontUrl = `${base}fonts/DejaVuSans-msdf.fnt?v=3`;
   const id = ref(props.id);
   // if no id is set, generate a random one
   if (!id.value) {

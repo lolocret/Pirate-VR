@@ -10,31 +10,31 @@ AFRAME.registerComponent('mission-hud', {
 
   init: function () {
     const base = (import.meta && import.meta.env && import.meta.env.BASE_URL) || '/';
-    this._fontUrl = `${base}fonts/DejaVu-sdf.fnt`;
+    this._fontUrl = `${base}fonts/DejaVuSans-msdf.fnt?v=3`;
     this._zones = [
       {
         pos: { x: 0, y: 65, z: -135 }, tol: 18,
         accentColor: '#5b9fd4',
         tag: 'DEPART',
-        title: 'Parlez a Ching Shih',
-        desc: 'La legende des mers vous attend.\nCliquez sur elle pour recevoir vos ordres.',
-        ctrl: 'Clic souris  \u2022  Gachette droite'
+        title: 'Parlez à Ching Shih',
+        desc: 'La légende des mers vous attend.\nCliquez sur elle pour recevoir vos ordres.',
+        ctrl: 'Clic souris  \u2022  Gâchette droite'
       },
       {
         pos: { x: 2, y: 145, z: -82 }, tol: 14,
         accentColor: '#5aaa6a',
-        tag: 'TELESCOPE',
-        title: 'Reperez le tresor enfoui',
-        desc: 'Sortez la longue-vue et zoomez\nvers l\u2019horizon pour decouvrir le coffre.',
-        ctrl: 'Clic droit ou Z  \u2022  Gachette droite'
+        tag: 'TÉLESCOPE',
+        title: 'Repérez le trésor enfoui',
+        desc: 'Sortez la longue‑vue et zoomez\nvers l’horizon pour découvrir le coffre.',
+        ctrl: 'Clic droit ou Z  \u2022  Gâchette droite'
       },
       {
         pos: { x: 27, y: 61, z: -55 }, tol: 10,
         accentColor: '#d43028',
         tag: 'COMBAT',
-        title: 'Eliminez le Kraken !',
-        desc: 'Visez le Kraken et tirez. Plusieurs coups\nnecessaires. Il contre-attaque !',
-        ctrl: 'Espace ou Clic gauche  \u2022  Gachette droite'
+        title: 'Éliminez le Kraken !',
+        desc: 'Visez le Kraken et tirez. Plusieurs coups\nnécessaires. Il contre‑attaque !',
+        ctrl: 'Espace ou Clic gauche  \u2022  Gâchette droite'
       },
       {
         pos: { x: 4, y: 64, z: -32 }, tol: 10,
@@ -42,7 +42,7 @@ AFRAME.registerComponent('mission-hud', {
         tag: 'NAVIGATION',
         title: 'Consultez votre carte',
         desc: 'Ouvrez la carte sur votre main gauche\npour choisir votre prochaine destination.',
-        ctrl: 'Bouton X  \u2022  Controleur gauche'
+        ctrl: 'Bouton X  \u2022  Contrôleur gauche'
       }
     ];
 
@@ -150,7 +150,7 @@ AFRAME.registerComponent('mission-hud', {
     this._tagEl.setAttribute('color', '#d6b26a');
     this._tagEl.setAttribute('align', 'left');
     this._tagEl.setAttribute('position', `${-W / 2 + 0.020} ${H / 2 - 0.026} 0.006`);
-    this._tagEl.setAttribute('scale', '0.044 0.044 0.044');
+    this._tagEl.setAttribute('scale', '0.060 0.060 0.060');
     this._tagEl.setAttribute('width', '5');
     this._tagEl.setAttribute('lineHeight', '1.15');
     this._tagEl.setAttribute('font', this._fontUrl);
@@ -161,9 +161,9 @@ AFRAME.registerComponent('mission-hud', {
     this._titleEl.setAttribute('color', '#f0dfb5');
     this._titleEl.setAttribute('align', 'center');
     this._titleEl.setAttribute('width', '7');
-    this._titleEl.setAttribute('wrap-count', '64');
-    this._titleEl.setAttribute('position', `0 ${H / 2 - 0.058} 0.006`);
-    this._titleEl.setAttribute('scale', '0.054 0.054 0.054');
+    this._titleEl.setAttribute('wrap-count', '58');
+    this._titleEl.setAttribute('position', `0 ${H / 2 - 0.054} 0.006`);
+    this._titleEl.setAttribute('scale', '0.072 0.072 0.072');
     this._titleEl.setAttribute('lineHeight', '1.12');
     this._titleEl.setAttribute('font', this._fontUrl);
     this._panel.appendChild(this._titleEl);
@@ -173,9 +173,9 @@ AFRAME.registerComponent('mission-hud', {
     this._descEl.setAttribute('color', '#c9a777');
     this._descEl.setAttribute('align', 'center');
     this._descEl.setAttribute('width', '7.5');
-    this._descEl.setAttribute('wrap-count', '78');
-    this._descEl.setAttribute('position', `0 -0.010 0.006`);
-    this._descEl.setAttribute('scale', '0.042 0.042 0.042');
+    this._descEl.setAttribute('wrap-count', '70');
+    this._descEl.setAttribute('position', `0 -0.004 0.006`);
+    this._descEl.setAttribute('scale', '0.056 0.056 0.056');
     this._descEl.setAttribute('lineHeight', '1.18');
     this._descEl.setAttribute('font', this._fontUrl);
     this._panel.appendChild(this._descEl);
@@ -185,8 +185,8 @@ AFRAME.registerComponent('mission-hud', {
     this._ctrlEl.setAttribute('color', '#8b6a3b');
     this._ctrlEl.setAttribute('align', 'center');
     this._ctrlEl.setAttribute('width', '6.5');
-    this._ctrlEl.setAttribute('position', `0 ${-H / 2 + 0.012} 0.006`);
-    this._ctrlEl.setAttribute('scale', '0.034 0.034 0.034');
+    this._ctrlEl.setAttribute('position', `0 ${-H / 2 + 0.016} 0.006`);
+    this._ctrlEl.setAttribute('scale', '0.045 0.045 0.045');
     this._ctrlEl.setAttribute('lineHeight', '1.1');
     this._ctrlEl.setAttribute('font', this._fontUrl);
     this._panel.appendChild(this._ctrlEl);

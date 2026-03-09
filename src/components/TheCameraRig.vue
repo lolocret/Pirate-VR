@@ -48,17 +48,7 @@
         align="center"
         color="#ffffff"
         scale="0.2 0.2 0.2"
-        :font="`${base}fonts/DejaVu-sdf.fnt`"
-      ></a-text>
-      <a-text
-        id="debug-status"
-        value=""
-        visible="false"
-        position="0 -0.22 -0.45"
-        align="center"
-        color="#56c8ff"
-        scale="0.18 0.18 0.18"
-        :font="`${base}fonts/DejaVu-sdf.fnt`"
+        :font="`${base}fonts/DejaVuSans-msdf.fnt?v=3`"
       ></a-text>
       <a-entity
         geometry="primitive: circle; radius: 0.0003;"
@@ -197,7 +187,6 @@
       asset-selector="hand: right"
       cannon-shooter="activeAsset: Pistolet; rig: #camera-rig; canonPos: 27 61 -55; posTolerance: 4; allowDesktop: true; forceEnable: false"
       aim-reticle="distance: 700"
-      input-debug="target: #debug-status"
       trigger-click
     >
       <!-- Display area for selected asset - bigger and more forward -->

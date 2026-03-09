@@ -136,7 +136,7 @@ AFRAME.registerComponent('proximity-dialogue', {
     });
 
     const base = (import.meta && import.meta.env && import.meta.env.BASE_URL) || '/';
-    const fontUrl = `${base}fonts/DejaVu-sdf.fnt`;
+    const fontUrl = `${base}fonts/DejaVuSans-msdf.fnt?v=3`;
 
     // Header : nom du personnage
     const nameEl = document.createElement('a-text');
@@ -145,7 +145,7 @@ AFRAME.registerComponent('proximity-dialogue', {
     nameEl.setAttribute('align', 'center');
     nameEl.setAttribute('width', '7');
     nameEl.setAttribute('position', '0 0.78 0.02');
-    nameEl.setAttribute('scale', '0.40 0.40 0.40');
+    nameEl.setAttribute('scale', '0.50 0.50 0.50');
     nameEl.setAttribute('font', fontUrl);
     panel.appendChild(nameEl);
 
@@ -163,9 +163,9 @@ AFRAME.registerComponent('proximity-dialogue', {
     this._textEl.setAttribute('color', '#f1e6cf');
     this._textEl.setAttribute('align', 'center');
     this._textEl.setAttribute('width', '7.2');
-    this._textEl.setAttribute('wrap-count', '56');
+    this._textEl.setAttribute('wrap-count', '50');
     this._textEl.setAttribute('position', '0 0.08 0.02');
-    this._textEl.setAttribute('scale', '0.50 0.50 0.50');
+    this._textEl.setAttribute('scale', '0.60 0.60 0.60');
     this._textEl.setAttribute('font', fontUrl);
     panel.appendChild(this._textEl);
 
@@ -184,7 +184,7 @@ AFRAME.registerComponent('proximity-dialogue', {
     this._progressEl.setAttribute('align', 'center');
     this._progressEl.setAttribute('width', '5');
     this._progressEl.setAttribute('position', '0 -0.80 0.02');
-    this._progressEl.setAttribute('scale', '0.32 0.32 0.32');
+    this._progressEl.setAttribute('scale', '0.40 0.40 0.40');
     this._progressEl.setAttribute('font', fontUrl);
     panel.appendChild(this._progressEl);
 
@@ -195,7 +195,7 @@ AFRAME.registerComponent('proximity-dialogue', {
     this._hintEl.setAttribute('align', 'center');
     this._hintEl.setAttribute('width', '5');
     this._hintEl.setAttribute('position', '0 -0.92 0.02');
-    this._hintEl.setAttribute('scale', '0.28 0.28 0.28');
+    this._hintEl.setAttribute('scale', '0.36 0.36 0.36');
     this._hintEl.setAttribute('font', fontUrl);
     panel.appendChild(this._hintEl);
 

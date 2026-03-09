@@ -43,7 +43,7 @@ AFRAME.registerComponent('cannon-target', {
     label.setAttribute('align', 'center');
     label.setAttribute('position', '0 0.6 0.01');
     label.setAttribute('scale', '0.7 0.7 0.7');
-    label.setAttribute('font', `${base}fonts/DejaVu-sdf.fnt`);
+    label.setAttribute('font', `${base}fonts/DejaVuSans-msdf.fnt?v=3`);
     this._label = label;
 
     this._barWrapper.appendChild(bg);

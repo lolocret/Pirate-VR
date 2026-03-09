@@ -86,20 +86,10 @@ AFRAME.registerComponent('telescope-scope', {
       this._toggleTelescope();
     };
 
-    this._boundCtrl = null;
-    this._bindController = () => {
-      const ctrl = this.data.controller || document.querySelector('#asset-hand');
-      if (!ctrl || ctrl === this._boundCtrl) return;
-      if (this._boundCtrl) {
-        this._boundCtrl.removeEventListener('asset-changed', this.onAssetChanged);
-        this._boundCtrl.removeEventListener('app-triggerdown', this.onTriggerDown);
-        this._boundCtrl.removeEventListener('triggerdown', this.onTriggerDown);
-        this._boundCtrl.removeEventListener('app-gripdown', this.onTriggerDown);
-        this._boundCtrl.removeEventListener('gripdown', this.onTriggerDown);
-        this._boundCtrl.removeEventListener('app-triggerup', this.onTriggerUp);
-        this._boundCtrl.removeEventListener('triggerup', this.onTriggerUp);
-      }
-      this._boundCtrl = ctrl;
+    this._boundCtrls = new Set();
+    this._bindController = (ctrl) => {
+      if (!ctrl || this._boundCtrls.has(ctrl)) return;
+      this._boundCtrls.add(ctrl);
       ctrl.addEventListener('asset-changed', this.onAssetChanged);
       ctrl.addEventListener('app-triggerdown', this.onTriggerDown);
       ctrl.addEventListener('triggerdown', this.onTriggerDown);
@@ -115,7 +105,13 @@ AFRAME.registerComponent('telescope-scope', {
       ctrl.addEventListener('abuttondown', this.onTriggerDown);
       ctrl.addEventListener('bbuttondown', this.onTriggerDown);
     };
-    this._bindController();
+    this._bindControllers = () => {
+      const right = this.data.controller || document.querySelector('#asset-hand');
+      const left = document.querySelector('#hand-left');
+      this._bindController(right);
+      this._bindController(left);
+    };
+    this._bindControllers();
     window.addEventListener('keydown', this.onKeyDown);
     window.addEventListener('mousedown', this.onMouseDown);
   },
@@ -140,7 +136,7 @@ AFRAME.registerComponent('telescope-scope', {
   },
 
   update: function () {
-    if (this._bindController) this._bindController();
+    if (this._bindControllers) this._bindControllers();
   },
 
   isTelescopeActive: function () {
@@ -156,13 +152,19 @@ AFRAME.registerComponent('telescope-scope', {
   },
 
   tick: function () {
-    if (!this._boundCtrl) this._bindController();
+    if (this._bindControllers) this._bindControllers();
     if (!this.scopeActive || !this.renderer) return;
     const attachTarget = this.data.attachTo || this.el;
     const attachObj = attachTarget && attachTarget.object3D ? attachTarget.object3D : null;
     if (!attachObj) return;
 
-    const ctrlForRay = this.data.controller || this._boundCtrl;
+    let ctrlForRay = this.data.controller || null;
+    if (!ctrlForRay && this._boundCtrls && this._boundCtrls.size) {
+      for (const c of this._boundCtrls) {
+        if (c && c.components && c.components.raycaster) { ctrlForRay = c; break; }
+      }
+      if (!ctrlForRay) ctrlForRay = this._boundCtrls.values().next().value || null;
+    }
     const raycaster = ctrlForRay && ctrlForRay.components && ctrlForRay.components.raycaster;
     if (raycaster && raycaster.ray) {
       this.scopeCamera.position.copy(raycaster.ray.origin);
@@ -238,22 +240,24 @@ AFRAME.registerComponent('telescope-scope', {
   },
 
   remove: function () {
-    const ctrl = this._boundCtrl || this.data.controller;
-    if (ctrl) {
-      ctrl.removeEventListener('asset-changed', this.onAssetChanged);
-      ctrl.removeEventListener('app-triggerdown', this.onTriggerDown);
-      ctrl.removeEventListener('triggerdown', this.onTriggerDown);
-      ctrl.removeEventListener('app-gripdown', this.onTriggerDown);
-      ctrl.removeEventListener('gripdown', this.onTriggerDown);
-      ctrl.removeEventListener('thumbstickdown', this.onAltToggle);
-      ctrl.removeEventListener('trackpaddown', this.onAltToggle);
-      ctrl.removeEventListener('xbuttondown', this.onAltToggle);
-      ctrl.removeEventListener('ybuttondown', this.onAltToggle);
-      ctrl.removeEventListener('app-triggerup', this.onTriggerUp);
-      ctrl.removeEventListener('triggerup', this.onTriggerUp);
-      ctrl.removeEventListener('click', this.onClick);
-      ctrl.removeEventListener('abuttondown', this.onTriggerDown);
-      ctrl.removeEventListener('bbuttondown', this.onTriggerDown);
+    if (this._boundCtrls && this._boundCtrls.size) {
+      for (const ctrl of this._boundCtrls) {
+        if (!ctrl) continue;
+        ctrl.removeEventListener('asset-changed', this.onAssetChanged);
+        ctrl.removeEventListener('app-triggerdown', this.onTriggerDown);
+        ctrl.removeEventListener('triggerdown', this.onTriggerDown);
+        ctrl.removeEventListener('app-gripdown', this.onTriggerDown);
+        ctrl.removeEventListener('gripdown', this.onTriggerDown);
+        ctrl.removeEventListener('thumbstickdown', this.onAltToggle);
+        ctrl.removeEventListener('trackpaddown', this.onAltToggle);
+        ctrl.removeEventListener('xbuttondown', this.onAltToggle);
+        ctrl.removeEventListener('ybuttondown', this.onAltToggle);
+        ctrl.removeEventListener('app-triggerup', this.onTriggerUp);
+        ctrl.removeEventListener('triggerup', this.onTriggerUp);
+        ctrl.removeEventListener('click', this.onClick);
+        ctrl.removeEventListener('abuttondown', this.onTriggerDown);
+        ctrl.removeEventListener('bbuttondown', this.onTriggerDown);
+      }
     }
     window.removeEventListener('keydown', this.onKeyDown);
     window.removeEventListener('mousedown', this.onMouseDown);

@@ -10,7 +10,7 @@ AFRAME.registerComponent('player-hud', {
 
   init: function () {
     const base = (import.meta && import.meta.env && import.meta.env.BASE_URL) || '/';
-    const fontUrl = `${base}fonts/DejaVu-sdf.fnt`;
+    const fontUrl = `${base}fonts/DejaVuSans-msdf.fnt?v=3`;
     this._lives = this.data.maxLives;
 
     const panel = document.createElement('a-entity');
