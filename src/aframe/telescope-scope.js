@@ -75,6 +75,7 @@ AFRAME.registerComponent('telescope-scope', {
     this.onClick = this._toggleTelescope;
     this.onTriggerUp = () => {};
     this.onAltToggle = this._toggleTelescope;
+    this.onSceneTrigger = () => this._toggleTelescope();
 
     // Desktop testing: Key Z or right click toggles zoom
     this.onKeyDown = (evt) => {
@@ -114,6 +115,10 @@ AFRAME.registerComponent('telescope-scope', {
     this._bindControllers();
     window.addEventListener('keydown', this.onKeyDown);
     window.addEventListener('mousedown', this.onMouseDown);
+    if (this.el.sceneEl) {
+      this.el.sceneEl.addEventListener('triggerdown', this.onSceneTrigger);
+      this.el.sceneEl.addEventListener('app-triggerdown', this.onSceneTrigger);
+    }
   },
 
   updateScopeState: function () {
@@ -144,7 +149,8 @@ AFRAME.registerComponent('telescope-scope', {
     if (this.data.allowDesktop && !AFRAME.utils.device.checkHeadsetConnected()) return true;
     if (this.currentAsset === this.data.activeAsset) return true;
     if (!this.data.rig || !this.data.rig.object3D) return false;
-    const p = this.data.rig.object3D.position;
+    const p = new THREE.Vector3();
+    this.data.rig.object3D.getWorldPosition(p);
     const t = this.data.telescopePos;
     return Math.abs(p.x - t.x) <= this.data.posTolerance &&
       Math.abs(p.y - t.y) <= this.data.posTolerance &&
@@ -261,6 +267,10 @@ AFRAME.registerComponent('telescope-scope', {
     }
     window.removeEventListener('keydown', this.onKeyDown);
     window.removeEventListener('mousedown', this.onMouseDown);
+    if (this.el.sceneEl) {
+      this.el.sceneEl.removeEventListener('triggerdown', this.onSceneTrigger);
+      this.el.sceneEl.removeEventListener('app-triggerdown', this.onSceneTrigger);
+    }
     if (this.scopeMesh) {
       if (this.scopeMesh.parent) {
         this.scopeMesh.parent.remove(this.scopeMesh);

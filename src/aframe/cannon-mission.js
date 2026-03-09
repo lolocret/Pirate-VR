@@ -12,7 +12,7 @@ AFRAME.registerComponent('cannon-mission', {
       if (name !== 'Kraken') return;
       if (this.statusEl) {
         this.statusEl.setAttribute('visible', 'true');
-        this.statusEl.setAttribute('value', 'Mission réussie ! Le Kraken est vaincu !');
+        this.statusEl.setAttribute('value', 'Merci, vous avez fini votre mission !');
       }
     };
 

@@ -31,6 +31,10 @@ AFRAME.registerComponent('cannon-shooter', {
       if (!this.isCanonActive()) return;
       this.shoot();
     };
+    this.onSceneTrigger = () => {
+      if (!this.isCanonActive()) return;
+      this.shoot();
+    };
 
     this.el.addEventListener('asset-changed', this.onAssetChanged);
     this.el.addEventListener('app-triggerdown', this.onTriggerDown);
@@ -51,6 +55,10 @@ AFRAME.registerComponent('cannon-shooter', {
     };
     window.addEventListener('keydown', this.onKeyDown);
     window.addEventListener('mousedown', this.onMouseDown);
+    if (this.el.sceneEl) {
+      this.el.sceneEl.addEventListener('triggerdown', this.onSceneTrigger);
+      this.el.sceneEl.addEventListener('app-triggerdown', this.onSceneTrigger);
+    }
   },
 
   isCanonActive: function () {
@@ -58,7 +66,8 @@ AFRAME.registerComponent('cannon-shooter', {
     if (this.data.allowDesktop && !AFRAME.utils.device.checkHeadsetConnected()) return true;
     if (this.currentAsset === this.data.activeAsset) return true;
     if (!this.data.rig || !this.data.rig.object3D) return false;
-    const p = this.data.rig.object3D.position;
+    const p = new THREE.Vector3();
+    this.data.rig.object3D.getWorldPosition(p);
     const c = this.data.canonPos;
     return Math.abs(p.x - c.x) <= this.data.posTolerance &&
       Math.abs(p.y - c.y) <= this.data.posTolerance &&
@@ -119,5 +128,9 @@ AFRAME.registerComponent('cannon-shooter', {
     this.el.removeEventListener('click', this.onClick);
     window.removeEventListener('keydown', this.onKeyDown);
     window.removeEventListener('mousedown', this.onMouseDown);
+    if (this.el.sceneEl) {
+      this.el.sceneEl.removeEventListener('triggerdown', this.onSceneTrigger);
+      this.el.sceneEl.removeEventListener('app-triggerdown', this.onSceneTrigger);
+    }
   }
 });

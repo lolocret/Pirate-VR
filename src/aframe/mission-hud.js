@@ -49,11 +49,11 @@ AFRAME.registerComponent('mission-hud', {
     this._currentZone = null;
     this._done = false;
 
-    const W = 0.700;
-    const H = 0.145;
+    const W = 0.82;
+    const H = 0.19;
 
     this._panel = document.createElement('a-entity');
-    this._panel.setAttribute('position', '0 -0.238 -0.565');
+    this._panel.setAttribute('position', '0 -0.21 -0.54');
     this._panel.setAttribute('visible', 'false');
 
     // ── Halo ambiant chaud ───────────────────────────────────────────────
@@ -150,7 +150,7 @@ AFRAME.registerComponent('mission-hud', {
     this._tagEl.setAttribute('color', '#d6b26a');
     this._tagEl.setAttribute('align', 'left');
     this._tagEl.setAttribute('position', `${-W / 2 + 0.020} ${H / 2 - 0.026} 0.006`);
-    this._tagEl.setAttribute('scale', '0.060 0.060 0.060');
+    this._tagEl.setAttribute('scale', '0.070 0.070 0.070');
     this._tagEl.setAttribute('width', '5');
     this._tagEl.setAttribute('lineHeight', '1.15');
     this._tagEl.setAttribute('font', this._fontUrl);
@@ -161,9 +161,9 @@ AFRAME.registerComponent('mission-hud', {
     this._titleEl.setAttribute('color', '#f0dfb5');
     this._titleEl.setAttribute('align', 'center');
     this._titleEl.setAttribute('width', '7');
-    this._titleEl.setAttribute('wrap-count', '58');
-    this._titleEl.setAttribute('position', `0 ${H / 2 - 0.054} 0.006`);
-    this._titleEl.setAttribute('scale', '0.072 0.072 0.072');
+    this._titleEl.setAttribute('wrap-count', '52');
+    this._titleEl.setAttribute('position', `0 ${H / 2 - 0.056} 0.006`);
+    this._titleEl.setAttribute('scale', '0.085 0.085 0.085');
     this._titleEl.setAttribute('lineHeight', '1.12');
     this._titleEl.setAttribute('font', this._fontUrl);
     this._panel.appendChild(this._titleEl);
@@ -173,9 +173,9 @@ AFRAME.registerComponent('mission-hud', {
     this._descEl.setAttribute('color', '#c9a777');
     this._descEl.setAttribute('align', 'center');
     this._descEl.setAttribute('width', '7.5');
-    this._descEl.setAttribute('wrap-count', '70');
-    this._descEl.setAttribute('position', `0 -0.004 0.006`);
-    this._descEl.setAttribute('scale', '0.056 0.056 0.056');
+    this._descEl.setAttribute('wrap-count', '62');
+    this._descEl.setAttribute('position', `0 -0.008 0.006`);
+    this._descEl.setAttribute('scale', '0.065 0.065 0.065');
     this._descEl.setAttribute('lineHeight', '1.18');
     this._descEl.setAttribute('font', this._fontUrl);
     this._panel.appendChild(this._descEl);
@@ -185,8 +185,8 @@ AFRAME.registerComponent('mission-hud', {
     this._ctrlEl.setAttribute('color', '#8b6a3b');
     this._ctrlEl.setAttribute('align', 'center');
     this._ctrlEl.setAttribute('width', '6.5');
-    this._ctrlEl.setAttribute('position', `0 ${-H / 2 + 0.016} 0.006`);
-    this._ctrlEl.setAttribute('scale', '0.045 0.045 0.045');
+    this._ctrlEl.setAttribute('position', `0 ${-H / 2 + 0.018} 0.006`);
+    this._ctrlEl.setAttribute('scale', '0.052 0.052 0.052');
     this._ctrlEl.setAttribute('lineHeight', '1.1');
     this._ctrlEl.setAttribute('font', this._fontUrl);
     this._panel.appendChild(this._ctrlEl);

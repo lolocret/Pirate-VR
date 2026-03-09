@@ -88,10 +88,12 @@ AFRAME.registerComponent('proximity-dialogue', {
 
   _buildBubble: function () {
     const panel = document.createElement('a-entity');
-    panel.setAttribute('position', '0 2.8 0');
+    panel.setAttribute('position', '0 2.1 -0.8');
+    panel.setAttribute('scale', '1.00 1.00 1.00');
     panel.setAttribute('visible', 'false');
     panel.classList.add('clickable');
     panel.setAttribute('clickable', '');
+    panel.setAttribute('look-at', '#camera-rig');
     this._bubble = panel;
 
     // Glow bronze
@@ -183,7 +185,7 @@ AFRAME.registerComponent('proximity-dialogue', {
     this._progressEl.setAttribute('color', '#b18a4a');
     this._progressEl.setAttribute('align', 'center');
     this._progressEl.setAttribute('width', '5');
-    this._progressEl.setAttribute('position', '0 -0.80 0.02');
+    this._progressEl.setAttribute('position', '0 -0.78 0.02');
     this._progressEl.setAttribute('scale', '0.40 0.40 0.40');
     this._progressEl.setAttribute('font', fontUrl);
     panel.appendChild(this._progressEl);
@@ -194,7 +196,7 @@ AFRAME.registerComponent('proximity-dialogue', {
     this._hintEl.setAttribute('color', '#8a6a34');
     this._hintEl.setAttribute('align', 'center');
     this._hintEl.setAttribute('width', '5');
-    this._hintEl.setAttribute('position', '0 -0.92 0.02');
+    this._hintEl.setAttribute('position', '0 -0.94 0.02');
     this._hintEl.setAttribute('scale', '0.36 0.36 0.36');
     this._hintEl.setAttribute('font', fontUrl);
     panel.appendChild(this._hintEl);

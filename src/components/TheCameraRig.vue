@@ -185,7 +185,7 @@
       custom-controls="hand: right"
       controller-fallback="hand: right"
       asset-selector="hand: right"
-      cannon-shooter="activeAsset: Pistolet; rig: #camera-rig; canonPos: 27 61 -55; posTolerance: 4; allowDesktop: true; forceEnable: false"
+      cannon-shooter="activeAsset: Pistolet; rig: #camera-rig; canonPos: 27 61 -55; posTolerance: 4; allowDesktop: true; forceEnable: true"
       aim-reticle="distance: 700"
       trigger-click
     >
