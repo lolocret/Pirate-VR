@@ -13,7 +13,10 @@ AFRAME.registerComponent('custom-controls', {
 
   init: function () {
     const el = this.el;
-    const map = (from, to) => el.addEventListener(from, () => el.emit(to, {}, false));
+    const map = (from, to) => el.addEventListener(from, () => {
+      el.emit(to, {}, false);
+      if (el.sceneEl) el.sceneEl.emit(to, {}, false);
+    });
     map('triggerdown',     'app-triggerdown');
     map('triggerup',       'app-triggerup');
     map('gripdown',        'app-gripdown');
